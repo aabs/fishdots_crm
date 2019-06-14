@@ -1,43 +1,42 @@
-function on_new_opportunity -a opp_summary contact_name contact_details
+
+
+function new_opportunity -a opp_summary contact_name contact_details
     set -g r '{"event_type": "opportunity-new"}'
     _set r id (uuidgen)
     _set r when (date --iso-8601=minutes)
     _set r opp_summary $opp_summary
     _set r contact_name $contact_name
     _set r contact_details $contact_details # freeform contact details such as phone, email etc
-    emit new_event $r
-    emit opportunity_new $r
+    echo $r
 end
 
-function on_opportunity_outcome -a id outcome
+function opportunity_outcome -a id outcome
     set -g r '{"event_type": "opportunity-success"}'
     _set r when (date --iso-8601=minutes)
     _set r id $id
     _set r outcome $outcome
-    emit new_event $r
-    emit opportunity_outcome $r
+    echo $r
 end
 
-function on_opportunity_success -a id
-    on_opportunity_outcome -a $id 'success'
+function opportunity_success -a id
+    echo (opportunity_outcome -a $id 'success')
 end
 
-function on_opportunity_failure -a id
-    on_opportunity_outcome -a $id 'failure'
+function opportunity_failure -a id
+    echo (opportunity_outcome -a $id 'failure')
 end
 
-function on_opportunity_rejected -a id
-    on_opportunity_outcome -a $id 'rejected'
+function opportunity_rejected -a id
+    echo (opportunity_outcome -a $id 'rejected')
 end
 
-function on_opportunity_update -a id update_type update_body
+function opportunity_update -a id update_type update_body
     set -g r '{"event_type": "opportunity-update"}'
     _set r when (date --iso-8601=minutes)
     _set r id $id
     _set r update_type $update_type
     _set r content $update_body
-    emit new_event $r
-    emit opportunity_update $r
+    echo $r
 end
 
 
