@@ -18,8 +18,10 @@ function crm -d "dispatcher function for fishdots_crm commands"
     #     project_list
     case open
         crm_open
+    case new
+      crm_new
     case opp
-      # crm opp <summary> <contact_name> <contact_details>
+      # crm opp <summary> <agency> <contact_name> <contact_details>
       on_new_opportunity $argv[2] $argv[3] $argv[4] $argv[5]
     # case path
     #     project_path $argv[2]
@@ -55,10 +57,12 @@ function crm_help -d "display usage info"
   echo ""
   echo "crm <command> [options] [args]"
   echo ""
-  _fd_display_option 'crm' 'opp <summary> <contact_name> <contact_details>' "create a new opportunity"
-  _fd_display_option 'crm' "help" "display usage info"
+  _fd_display_option 'crm' 'opp <summary> <agency> <contact_name> <contact_details>' "create a new opportunity"
   _fd_display_option 'crm' "open" "choose current crm opportunity"
+  _fd_display_option 'crm' "summarise" "display whole details about current opportunity"
   _fd_display_option 'crm' "sync" "save activity to git origin"
+  _fd_display_option 'crm' "update" "add activity update to opportunity"
+  _fd_display_option 'crm' "help" "display usage info"
   echo ""
 end
 
@@ -106,14 +110,22 @@ end
 
 function crm_create_new_opp -d "display a form to gather info for creating a new opportunity"
 set x (dialog --ok-label 'submit' --backtitle 'Create new opportunity'  --title 'new opportunity' --form 'new opportunity'  15 80 0 'summary:' 1 1	'' 1 10 50 0 'name:'    2 1	'' 2 10 50 0 'details:' 3 1	'' 3 10 50 0)
+end
 
+function crm_new -d "create a new opportunity"
+  # <summary> <agency> <contact_name> <contact_details>
+  get_input 'Summary: ' summary
+  get_input 'Agency: ' agency
+  get_input 'contact name: ' contact_name
+  get_input 'contact details: ' contact_details
+  on_new_opportunity $summary $agency $contact_name $contact_details
 end
 
 function get_input -a prompt var_name -d 'get user input and place it in var_name'
   read --global --prompt-str="$prompt" $var_name
 end
 
-function crm_update -d "description"
+function crm_update -d "add activity update to opportunity"
   crm_select_opp
   if test $status -eq 0
     set id $selected_opportunity; set -e selected_opportunity
@@ -132,7 +144,7 @@ function crm_summarise -e problem_summarise
   set p (crm_get_current_opp_path)
   cat $p/index.md
   echo ""
-  cat $p/activity
+  crm_opp_activity_by_id $FD_CRM_CURRENT
   echo ""
   cat $p/notes
 end
