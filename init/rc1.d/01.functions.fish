@@ -9,8 +9,8 @@ function crm -d "dispatcher function for fishdots_crm commands"
     case opp
       # crm opp <summary> <contact_name> <contact_details>
       on_new_opportunity $argv[2] $argv[3] $argv[4]
-    # case e
-    #     edit_project $argv[2]
+    case update
+        crm_update
     # case cd
     #     project_cd $argv[2]
     # case goto
@@ -100,4 +100,23 @@ end
 
 function crm_sync -d "save all crm updates to origin repo"
   fishdots_git_sync $FD_CRM_HOME "crm updates and activity"
+end
+
+function crm_create_new_opp -d "display a form to gather info for creating a new opportunity"
+set x (dialog --ok-label 'submit' --backtitle 'Create new opportunity'  --title 'new opportunity' --form 'new opportunity'  15 80 0 'summary:' 1 1	'' 1 10 50 0 'name:'    2 1	'' 2 10 50 0 'details:' 3 1	'' 3 10 50 0)
+
+end
+
+function get_input -a prompt var_name -d 'get user input and place it in var_name'
+  read --global --prompt-str="$prompt" $var_name
+end
+
+function crm_update -d "description"
+  crm_select_opp
+  if test $status -eq 0
+    set id $selected_opportunity; set -e selected_opportunity
+    get_input 'type of update ("contact, meeting, email): ' update_type
+    get_input 'details: ' content
+    on_opportunity_update $id "$update_type" "$content"
+  end
 end

@@ -1,5 +1,4 @@
 function handle_new_opportunity -e opportunity_new -d "create and register a new opportunity as it arises"
-    echo handle_new_opportunity
     set -g payload "$argv"
     log_payload $payload
     set -l id (get_unquoted payload id)
@@ -23,6 +22,8 @@ echo "# Notes
 " > $opp_path/notes
 echo "# Activity
 
+| When | Type | What |
+| :--- | :--- | :--- |
 " > $opp_path/activity
 echo -n "new" > $opp_path/state
 end
@@ -31,6 +32,16 @@ function log_payload -d "output the whole of argv to stdout"
     echo $argv
 end
 
-function get_unquoted -a v k -d "description"
+function get_unquoted -a v k
     echo (string replace -a "\"" "" (_get $v $k))
+end
+
+function handle_opportunity_update -e opportunity_update
+    set -g payload "$argv"
+    set -l id (get_unquoted payload id)
+    set -l when (get_unquoted payload when)
+    set -l update_type (get_unquoted payload update_type)
+    set -l content (get_unquoted payload content)
+    set -l opp_path (crm_get_opp_path_by_id $id)
+    echo -e "| $when | $update_type | $content |" >> $opp_path/activity
 end
