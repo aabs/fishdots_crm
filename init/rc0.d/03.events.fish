@@ -1,5 +1,5 @@
-function on_new_opportunity -a opp_summary contact_name contact_details
-    set r (new_opportunity $opp_summary $contact_name $contact_details)
+function on_new_opportunity -a opp_summary agency contact_name contact_details
+    set r (new_opportunity $opp_summary $agency $contact_name $contact_details)
     echo $r
     emit new_event $r
     emit opportunity_new $r

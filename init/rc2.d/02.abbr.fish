@@ -1,0 +1,1 @@
+abbr --add crms 'crm summarise'

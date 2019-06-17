@@ -6,11 +6,6 @@ function crm -d "dispatcher function for fishdots_crm commands"
     return
   end
   switch $argv[1]
-    case opp
-      # crm opp <summary> <contact_name> <contact_details>
-      on_new_opportunity $argv[2] $argv[3] $argv[4]
-    case update
-        crm_update
     # case cd
     #     project_cd $argv[2]
     # case goto
@@ -23,16 +18,23 @@ function crm -d "dispatcher function for fishdots_crm commands"
     #     project_list
     case open
         crm_open
+    case opp
+      # crm opp <summary> <contact_name> <contact_details>
+      on_new_opportunity $argv[2] $argv[3] $argv[4] $argv[5]
     # case path
     #     project_path $argv[2]
     # case set
     #     project_set $argv[2]
+    case summarise
+        crm_summarise
     case sync
-        project_sync
+        crm_sync
     # case todo
     #   emit task_project_new $argv[2]
     # case menu
     #   project_menu
+    case update
+        crm_update
     case '*'
       crm_help
   end
@@ -120,3 +122,18 @@ function crm_update -d "description"
     on_opportunity_update $id "$update_type" "$content"
   end
 end
+
+
+function crm_sync -d "save all notes to origin repo"
+  fishdots_git_sync $FD_CRM_HOME "crm activity updates"
+end
+
+function crm_summarise -e problem_summarise
+  set p (crm_get_current_opp_path)
+  cat $p/index.md
+  echo ""
+  cat $p/activity
+  echo ""
+  cat $p/notes
+end
+

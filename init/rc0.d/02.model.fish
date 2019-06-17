@@ -1,10 +1,11 @@
 
 
-function new_opportunity -a opp_summary contact_name contact_details
+function new_opportunity -a opp_summary agency contact_name contact_details
     set -g r '{"event_type": "opportunity-new"}'
     _set r id (uuidgen)
     _set r when (date --iso-8601=minutes)
     _set r opp_summary $opp_summary
+    _set r agency $agency
     _set r contact_name $contact_name
     _set r contact_details $contact_details # freeform contact details such as phone, email etc
     echo $r
