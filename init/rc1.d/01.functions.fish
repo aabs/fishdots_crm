@@ -129,8 +129,8 @@ function crm_update -d "add activity update to opportunity"
   crm_select_opp
   if test $status -eq 0
     set id $selected_opportunity; set -e selected_opportunity
-    get_input 'type of update ("contact, meeting, email): ' update_type
-    get_input 'details: ' content
+    get_input 'type of update ("contact, meeting, email, notes, ...): ' update_type
+    crm_gather_long_text content
     on_opportunity_update $id "$update_type" "$content"
   end
 end
@@ -149,3 +149,14 @@ function crm_summarise -e problem_summarise
   cat $p/notes
 end
 
+function crm_gather_long_text -a var_name
+  set p (mktemp)
+  echo $p
+  eval "$EDITOR -n --noplugin -- $p"
+  set -g $var_name (cat $p | sed ':a;N;$!ba;s/\n/PP/g')
+  rm -f $p
+end
+
+function crm_decode_text -a encoded_text -d "description"
+  cat $encoded_text | sed 's/PP/\n/g'
+end

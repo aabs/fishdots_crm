@@ -12,7 +12,7 @@ function new_opportunity -a opp_summary agency contact_name contact_details
 end
 
 function opportunity_outcome -a id outcome
-    set -g r '{"event_type": "opportunity-success"}'
+    set -g r '{"event_type": "opportunity-outcome"}'
     _set r when (date --iso-8601=minutes)
     _set r id $id
     _set r outcome $outcome
